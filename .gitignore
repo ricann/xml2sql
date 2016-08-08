@@ -2,6 +2,7 @@
 *.dep
 *.out
 *.bak
+*.swp
 
 tags
 xml2sql

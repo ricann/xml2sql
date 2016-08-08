@@ -30,6 +30,8 @@ clean:
 	@echo "Cleaning object files"
 	$(RM) -f *.o
 	$(RM) -f *.dep
+	$(RM) -f *.out
+	$(RM) -f tags
 	$(RM) -f $(XML2SQL_OBJ_DIR)/*.o
 	$(RM) -f $(XML2SQL_OBJ_DIR)/*.dep
 	$(RM) -f $(XML2SQL_TARGET)

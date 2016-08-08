@@ -6,47 +6,45 @@
 
 #include "xmlparse.h"
 
-int count = 0;
-xmlChar *nodeName[XML_MAXSIZE];
-xmlChar *nodeProp[XML_MAXSIZE];
-xmlChar *nodeValue[XML_MAXSIZE];
+typedef struct xmlinfo_s{
+	int count;
 
-xmlDocPtr doc; 
-xmlNodePtr rootNode;
+	xmlChar *nodeName[XML_MAXSIZE];
+	xmlChar *nodeProp[XML_MAXSIZE];
+	xmlChar *nodeValue[XML_MAXSIZE];
+	
+	xmlDocPtr doc; 
+	xmlNodePtr rootNode;
+}xmlinfo_t;
 
-int xml_open(char *fname);
-int xml_traverse(xmlNodePtr nodePtr);
-void xml_close();
-void xml_print();
-
-int main()
-{
-	xml_open(XML_NAME);
-	xml_traverse(rootNode);
-	xml_print();
-	xml_close();
-
-	return 0;
-}
+static xmlinfo_t xinfo;
 
 int xml_open(char *fname)
 {
+	// init xinfo struct
+	memset(&xinfo, 0, sizeof(xinfo));
+
 	// open xml file
-	doc = xmlReadFile(XML_NAME, XML_ENCODE, XML_PARSE_RECOVER);
-	if(!doc) {
+	xinfo.doc = xmlReadFile(XML_NAME, XML_ENCODE, XML_PARSE_RECOVER);
+	if(!xinfo.doc) {
 		printf("open xml error!\n");
 		exit(1);
 	}
 
 	// get root element
-	rootNode = xmlDocGetRootElement(doc);
-	if(!rootNode){
+	xinfo.rootNode = xmlDocGetRootElement(xinfo.doc);
+	if(!xinfo.rootNode){
 		printf("the document is empty!\n");
-		xmlFreeDoc(doc);
+		xmlFreeDoc(xinfo.doc);
 		exit(1);
 	}
 
 	return 0;
+}
+
+int xml_parse()
+{
+	return xml_traverse(xinfo.rootNode);
 }
 
 int xml_traverse(xmlNodePtr nodePtr)
@@ -63,13 +61,17 @@ int xml_traverse(xmlNodePtr nodePtr)
 			continue;
 		}
 		
-		nodeName[count] = (xmlChar *)curNode->name;
-		nodeProp[count] = xmlGetProp(curNode, (const xmlChar *)"name");
+		xinfo.nodeName[xinfo.count] = (xmlChar *)curNode->name;
+		xinfo.nodeProp[xinfo.count] = xmlGetProp(curNode, (const xmlChar *)"name");
 		if(curNode->xmlChildrenNode->next == NULL)
-			nodeValue[count] = xmlNodeGetContent(curNode);
+			xinfo.nodeValue[xinfo.count] = xmlNodeGetContent(curNode);
 		else
-			nodeValue[count] = (xmlChar *)"";
-		count++;
+			xinfo.nodeValue[xinfo.count] = (xmlChar *)"";
+		xinfo.count++;
+		if(xinfo.count == XML_MAXSIZE) {
+			printf("buffer is full, exit...\n");
+			exit(1);
+		}
 
 		if(curNode->xmlChildrenNode)
 			xml_traverse(curNode);
@@ -81,7 +83,7 @@ int xml_traverse(xmlNodePtr nodePtr)
 
 void xml_close()
 {
-	xmlFreeDoc(doc);
+	xmlFreeDoc(xinfo.doc);
 }
 
 void xml_print()
@@ -90,8 +92,8 @@ void xml_print()
 
 	printf("%-16s%-32s%-32s\n", "name", "prop", "value");
 	printf("----------------------------------------------------\n");
-	for(i=0; i<count; i++) 
-		printf("%-16s%-32s%-32s\n", nodeName[i], nodeProp[i], nodeValue[i]);
+	for(i=0; i<xinfo.count; i++) 
+		printf("%-16s%-32s%-32s\n", xinfo.nodeName[i], xinfo.nodeProp[i], xinfo.nodeValue[i]);
 	
 }
 
