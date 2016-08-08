@@ -28,7 +28,7 @@ XML2SQL_OBJ		:= $(patsubst $(XML2SQL_SRC_DIR)/%, $(XML2SQL_OBJ_DIR)/%, $(XML2SQL
 XML2SQL_DEP		= $(XML2SQL_SRC:.c=.dep)
 XML2SQL_DEP		:= $(filter %.dep, $(XML2SQL_DEP))
 XML2SQL_DEP		:= $(patsubst $(XML2SQL_SRC_DIR)/%, $(XML2SQL_OBJ_DIR)/%, $(XML2SQL_DEP)) 
-XML2SQL_INC		= -I$(XML2SQL_INC_DIR)
+XML2SQL_INC		= -I/usr/include/libxml2 -I$(XML2SQL_INC_DIR) 
 
 XML2SQL_LIB_PATH	= -L.
 XML2SQL_LIB		= -lxml2 -lsqlite3

@@ -1,4 +1,7 @@
 *.o
 *.dep
+*.out
+*.bak
 
+tags
 xml2sql
