@@ -49,10 +49,22 @@ int xml_parse()
 
 int xml_traverse(xmlNodePtr nodePtr)
 {
+	int len1 = 0;
+	int len2 = 0;
 	xmlNodePtr curNode = NULL;
 
-	if(!nodePtr)
+	static int depth = -1;
+	static char catbuf[XML_MAX_BUF];
+	static char arrbuf[XML_MAX_DEPTH][XML_MIN_BUF];
+
+	if(!nodePtr || depth>=XML_MAX_DEPTH)
 		return 1;
+
+	if(++depth > 0) {
+		len1 = strlen(arrbuf[depth-1]) + 1;
+		strcat(catbuf, arrbuf[depth-1]);
+		strcat(catbuf, ".");
+	}
 
 	curNode = nodePtr->xmlChildrenNode;
 	while(curNode) {
@@ -63,6 +75,16 @@ int xml_traverse(xmlNodePtr nodePtr)
 		
 		xinfo.nodeName[xinfo.count] = (xmlChar *)curNode->name;
 		xinfo.nodeProp[xinfo.count] = xmlGetProp(curNode, (const xmlChar *)"name");
+		if(strcmp((char *)curNode->name, "array") == 0)
+			strcpy(arrbuf[depth], (char *)xinfo.nodeProp[xinfo.count]);
+		else if(strcmp((char *)curNode->name, "key") == 0){
+			len2 = strlen(((char *)xinfo.nodeProp[xinfo.count]));
+			strcat(catbuf, (char *)xinfo.nodeProp[xinfo.count]);
+			xmlSetProp(curNode, (const xmlChar *)"name", (const xmlChar *)catbuf);
+			xinfo.nodeProp[xinfo.count] = xmlGetProp(curNode, (const xmlChar *)"name");
+			catbuf[strlen(catbuf) - len2] = '\0';
+		}
+
 		if(curNode->xmlChildrenNode->next == NULL)
 			xinfo.nodeValue[xinfo.count] = xmlNodeGetContent(curNode);
 		else
@@ -78,6 +100,10 @@ int xml_traverse(xmlNodePtr nodePtr)
 		curNode = curNode->next;
 	}
 
+	if(depth-- > 0) {
+		catbuf[strlen(catbuf) - len1] = '\0';
+	}
+
 	return 0;
 }
 
@@ -90,10 +116,10 @@ void xml_print()
 {
 	int i;
 
-	printf("%-16s%-32s%-32s\n", "name", "prop", "value");
-	printf("----------------------------------------------------\n");
+	printf("%-16s%-64s%-32s\n", "name", "prop", "value");
+	printf("-----------------------------------------------------------------------------------------\n");
 	for(i=0; i<xinfo.count; i++) 
-		printf("%-16s%-32s%-32s\n", xinfo.nodeName[i], xinfo.nodeProp[i], xinfo.nodeValue[i]);
+		printf("%-16s%-64s%-32s\n", xinfo.nodeName[i], xinfo.nodeProp[i], xinfo.nodeValue[i]);
 	
 }
 

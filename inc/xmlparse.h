@@ -4,7 +4,10 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
-#define XML_MAXSIZE		1024
+#define XML_MAXSIZE			1024
+#define XML_MAX_DEPTH		32
+#define XML_MIN_BUF			128
+#define XML_MAX_BUF			4096
 
 #define XML_ROOT		"config"
 #define XML_ARRAY		"array"
