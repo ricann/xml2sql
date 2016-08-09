@@ -53,6 +53,7 @@ int xml_traverse(xmlNodePtr nodePtr)
 	int len2 = 0;
 	xmlNodePtr curNode = NULL;
 
+	// used to save every layer's array name info
 	static int depth = -1;
 	static char catbuf[XML_MAX_BUF];
 	static char arrbuf[XML_MAX_DEPTH][XML_MIN_BUF];
@@ -60,6 +61,7 @@ int xml_traverse(xmlNodePtr nodePtr)
 	if(!nodePtr || depth>=XML_MAX_DEPTH)
 		return 1;
 
+	// strcat every layer's array info
 	if(++depth > 0) {
 		len1 = strlen(arrbuf[depth-1]) + 1;
 		strcat(catbuf, arrbuf[depth-1]);
@@ -68,11 +70,13 @@ int xml_traverse(xmlNodePtr nodePtr)
 
 	curNode = nodePtr->xmlChildrenNode;
 	while(curNode) {
+		// not handle text name
 		if(strcmp((char *)curNode->name, "text") == 0){
 			curNode = curNode->next;	
 			continue;
 		}
 		
+		// save array name, key name, key value
 		xinfo.nodeName[xinfo.count] = (xmlChar *)curNode->name;
 		xinfo.nodeProp[xinfo.count] = xmlGetProp(curNode, (const xmlChar *)"name");
 		if(strcmp((char *)curNode->name, "array") == 0)
@@ -95,11 +99,13 @@ int xml_traverse(xmlNodePtr nodePtr)
 			exit(1);
 		}
 
+		// traverse next xml layer
 		if(curNode->xmlChildrenNode)
 			xml_traverse(curNode);
 		curNode = curNode->next;
 	}
 
+	// change str1.str2.str3 to str1.str2
 	if(depth-- > 0) {
 		catbuf[strlen(catbuf) - len1] = '\0';
 	}
