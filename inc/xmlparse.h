@@ -1,5 +1,5 @@
-#ifndef __XMLPARSE__
-#define __XMLPARSE__
+#ifndef __XMLPARSE_H__
+#define __XMLPARSE_H__
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -19,4 +19,4 @@ int xml_traverse(xmlNodePtr);
 void xml_close();
 void xml_print();
 
-#endif
+#endif /* __XMLPARSE_H__ */
