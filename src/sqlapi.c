@@ -26,81 +26,25 @@ int sql_open(const char *dbname)
 	return SQLAPI_SUCCESS;
 }
 
+int sql_exec(const char *sql)
+{
+	int rc;
+
+	rc = sqlite3_exec(db, sql, callback, 0, &errmsg);
+	if(rc != SQLITE_OK) {
+		SQLAPI_DBG("error : %s\n", errmsg);
+		return SQLAPI_FAIL;
+	}
+
+	SQLAPI_DBG("success!\n");
+	return SQLAPI_SUCCESS;
+}
+
 int sql_close()
 {
 	sqlite3_close(db);
 
 	return SQLAPI_SUCCESS;	
-}
-
-int sql_create_table(const char *sql)
-{
-	int rc;
-
-	rc = sqlite3_exec(db, sql, callback, 0, &errmsg);
-	if(rc != SQLITE_OK) {
-		SQLAPI_DBG("create table error: %s\n", errmsg);
-		return SQLAPI_FAIL;
-	}
-
-	SQLAPI_DBG("create table success!\n");
-	return SQLAPI_SUCCESS;
-}
-
-int sql_insert(const char *sql)
-{
-	int rc;
-
-	rc = sqlite3_exec(db, sql, callback, 0, &errmsg);
-	if(rc != SQLITE_OK) {
-		SQLAPI_DBG("insert error: %s\n", errmsg);
-		return SQLAPI_FAIL;
-	}
-
-	SQLAPI_DBG("insert success!\n");
-	return SQLAPI_SUCCESS;
-}
-
-int sql_select(const char *sql)
-{
-	int rc;
-
-	rc = sqlite3_exec(db, sql, callback, 0, &errmsg);
-	if(rc != SQLITE_OK) {
-		SQLAPI_DBG("select error: %s\n", errmsg);
-		return SQLAPI_FAIL;
-	}
-
-	SQLAPI_DBG("select success!\n");
-	return SQLAPI_SUCCESS;
-}
-
-int sql_update(const char *sql)
-{
-	int rc;
-
-	rc = sqlite3_exec(db, sql, callback, 0, &errmsg);
-	if(rc != SQLITE_OK) {
-		SQLAPI_DBG("update error: %s\n", errmsg);
-		return SQLAPI_FAIL;
-	}
-
-	SQLAPI_DBG("update success!\n");
-	return SQLAPI_SUCCESS;
-}
-
-int sql_delete(const char *sql)
-{
-	int rc;
-
-	rc = sqlite3_exec(db, sql, callback, 0, &errmsg);
-	if(rc != SQLITE_OK) {
-		SQLAPI_DBG("delete error: %s\n", errmsg);
-		return SQLAPI_FAIL;
-	}
-
-	SQLAPI_DBG("delete success!\n");
-	return SQLAPI_SUCCESS;
 }
 
 static int callback(void *notused, int argc, char **argv, char **azColName)

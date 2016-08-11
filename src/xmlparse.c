@@ -137,13 +137,13 @@ int xml_save2db()
 	char sqlbuf[XML_MAX_BUF];
 
 	sql_open(DEFAULT_DB_NAME);	
-	sql_create_table(CREATE_TABLE_STR);
+	sql_exec(CREATE_TABLE_STR);
 	for(i=0, id=0; i<xinfo.count; i++) {
 		if(strcmp((char *)xinfo.nodeName[i], "key") != 0)
 			continue;
 		snprintf(sqlbuf, XML_MAX_BUF, INSERT_FMT_STR, 
 			id++, (char *)xinfo.nodeProp[i], (char *)xinfo.nodeValue[i], 2);
-		sql_insert(sqlbuf);
+		sql_exec(sqlbuf);
 	}
 
 	sql_close();
