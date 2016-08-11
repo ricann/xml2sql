@@ -12,11 +12,14 @@
 							"TYPE	INT NOT NULL )" 
 #define INSERT_FMT_STR		"INSERT INTO XMLDATA(ID,NAME,VALUE,TYPE) " \
 							"VALUES (%d, '%s', '%s', %d); "
+#define SELECT_VALUE_STR	"SELECT VALUE FROM XMLDATA WHERE NAME='%s'"
 
 #define SQLAPI_DBG			printf
 
 int sql_open(const char *);
 int sql_exec(const char *);
 int sql_close();
+
+int sql_key_get(const char *key, char *value, int len);
 
 #endif /* __SQLAPI_H__ */
