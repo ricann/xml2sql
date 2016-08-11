@@ -3,6 +3,7 @@
 *.out
 *.bak
 *.swp
+*.db
 
 tags
 xml2sql

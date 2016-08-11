@@ -22,4 +22,6 @@ int xml_traverse(xmlNodePtr);
 void xml_close();
 void xml_print();
 
+int xml_save2db();
+
 #endif /* __XMLPARSE_H__ */

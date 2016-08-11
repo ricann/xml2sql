@@ -4,6 +4,7 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
+#include "sqlapi.h"
 #include "xmlparse.h"
 
 typedef struct xmlinfo_s{
@@ -129,3 +130,22 @@ void xml_print()
 	
 }
 
+int xml_save2db()
+{
+	int i;
+	int id;
+	char sqlbuf[XML_MAX_BUF];
+
+	sql_open(DEFAULT_DB_NAME);	
+	sql_create_table(CREATE_TABLE_STR);
+	for(i=0, id=0; i<xinfo.count; i++) {
+		if(strcmp((char *)xinfo.nodeName[i], "key") != 0)
+			continue;
+		snprintf(sqlbuf, XML_MAX_BUF, INSERT_FMT_STR, 
+			id++, (char *)xinfo.nodeProp[i], (char *)xinfo.nodeValue[i], 2);
+		sql_insert(sqlbuf);
+	}
+
+	sql_close();
+	return 0;
+}
