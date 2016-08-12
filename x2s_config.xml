@@ -1,0 +1,13 @@
+<config>
+	<!-- for saving database related info -->
+	<array name="dbinfo">
+		<key name="dbname">test123.db</key>
+		<key name="dbtable">X2STABLE</key>
+	</array>
+	
+	<!-- for saving debug related info -->
+	<array name="debug">
+		<key name="method">1</key>
+		<key name="fname">default.dbg</key>
+	</array>
+</config>

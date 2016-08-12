@@ -1,12 +1,14 @@
-#include "xmlparse.h"
+#include "x2sconf.h"
+#include "x2sparse.h"
 #include "sqlapi.h"
 
 int main()
 {
 	char tmp[1024];
+	conf_read();
 
 	xml_open(XML_NAME);
-	xml_parse();
+	xml_parse_keycat();
 	xml_print();
 
 	xml_save2db();

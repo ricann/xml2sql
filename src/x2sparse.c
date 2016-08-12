@@ -5,7 +5,7 @@
 #include <libxml/tree.h>
 
 #include "sqlapi.h"
-#include "xmlparse.h"
+#include "x2sparse.h"
 
 typedef struct xmlinfo_s{
 	int count;
@@ -20,16 +20,16 @@ typedef struct xmlinfo_s{
 
 static xmlinfo_t xinfo;
 
-int xml_open(char *fname)
+int xml_open(const char *fname)
 {
 	// init xinfo struct
 	memset(&xinfo, 0, sizeof(xinfo));
 
 	// open xml file
-	xinfo.doc = xmlReadFile(XML_NAME, XML_ENCODE, XML_PARSE_RECOVER);
+	xinfo.doc = xmlReadFile(fname, XML_ENCODE, XML_PARSE_RECOVER);
 	if(!xinfo.doc) {
 		printf("open xml error!\n");
-		exit(1);
+		return PARSE_FAIL;
 	}
 
 	// get root element
@@ -37,30 +37,70 @@ int xml_open(char *fname)
 	if(!xinfo.rootNode){
 		printf("the document is empty!\n");
 		xmlFreeDoc(xinfo.doc);
-		exit(1);
+		return PARSE_FAIL;
 	}
 
-	return 0;
+	return PARSE_SUCCESS;
 }
 
 int xml_parse()
 {
-	return xml_traverse(xinfo.rootNode);
+	xml_traverse(xinfo.rootNode);
+
+	return PARSE_SUCCESS;
 }
 
-int xml_traverse(xmlNodePtr nodePtr)
+void xml_traverse(xmlNodePtr curNode)
+{
+	if(!curNode)
+		return;
+
+	while(curNode) {
+		// not handle text name
+		if(strcmp((char *)curNode->name, "text") == 0){
+			curNode = curNode->next;	
+			continue;
+		}
+		
+		// save array name, key name, key value
+		xinfo.nodeName[xinfo.count] = (xmlChar *)curNode->name;
+		xinfo.nodeProp[xinfo.count] = xmlGetProp(curNode, (const xmlChar *)"name");
+
+		if(curNode->xmlChildrenNode && curNode->xmlChildrenNode->next == NULL){
+			xinfo.nodeValue[xinfo.count] = xmlNodeGetContent(curNode);
+		} else {
+			xinfo.nodeValue[xinfo.count] = (xmlChar *)"";
+		}
+		xinfo.count++;
+		if(xinfo.count == XML_MAXSIZE) {
+			printf("buffer is full, exit...\n"); exit(1);
+		}
+
+		// traverse next xml layer
+		xml_traverse(curNode->xmlChildrenNode);
+		curNode = curNode->next;
+	}
+}
+
+int xml_parse_keycat()
+{
+	xml_traverse_keycat(xinfo.rootNode);
+
+	return PARSE_SUCCESS;
+}
+
+void xml_traverse_keycat(xmlNodePtr curNode)
 {
 	int len1 = 0;
 	int len2 = 0;
-	xmlNodePtr curNode = NULL;
 
 	// used to save every layer's array name info
 	static int depth = -1;
 	static char catbuf[XML_MAX_BUF];
 	static char arrbuf[XML_MAX_DEPTH][XML_MIN_BUF];
 
-	if(!nodePtr || depth>=XML_MAX_DEPTH)
-		return 1;
+	if(!curNode || depth>=XML_MAX_DEPTH)
+		return;
 
 	// strcat every layer's array info
 	if(++depth > 0) {
@@ -69,7 +109,6 @@ int xml_traverse(xmlNodePtr nodePtr)
 		strcat(catbuf, ".");
 	}
 
-	curNode = nodePtr->xmlChildrenNode;
 	while(curNode) {
 		// not handle text name
 		if(strcmp((char *)curNode->name, "text") == 0){
@@ -90,7 +129,7 @@ int xml_traverse(xmlNodePtr nodePtr)
 			catbuf[strlen(catbuf) - len2] = '\0';
 		}
 
-		if(curNode->xmlChildrenNode->next == NULL)
+		if(curNode->xmlChildrenNode && curNode->xmlChildrenNode->next == NULL)
 			xinfo.nodeValue[xinfo.count] = xmlNodeGetContent(curNode);
 		else
 			xinfo.nodeValue[xinfo.count] = (xmlChar *)"";
@@ -101,17 +140,37 @@ int xml_traverse(xmlNodePtr nodePtr)
 		}
 
 		// traverse next xml layer
-		if(curNode->xmlChildrenNode)
-			xml_traverse(curNode);
+		xml_traverse(curNode->xmlChildrenNode);
 		curNode = curNode->next;
 	}
 
 	// change str1.str2.str3 to str1.str2
-	if(depth-- > 0) {
+	if(depth-- > 0) 
 		catbuf[strlen(catbuf) - len1] = '\0';
-	}
+}
 
-	return 0;
+int xml_get_key(const char *key, char *value, int len)
+{
+	int i;
+	
+	for(i=0; i<xinfo.count; i++){
+		if(xinfo.nodeProp[i] == NULL)
+			continue;
+
+		if(strcmp(key, (char *)xinfo.nodeProp[i]) == 0) {
+			strncpy(value, (char *)xinfo.nodeValue[i], len);	
+			return PARSE_SUCCESS;
+		}
+	} 
+
+printf("get key 2\n");
+	return PARSE_FAIL;
+}
+
+int xml_set_key(const char *key, char *value, int len)
+{
+	// nothing to do now
+	return PARSE_SUCCESS;
 }
 
 void xml_close()
