@@ -195,25 +195,28 @@ int xml_save2db()
 {
 	int i;
 	int id;
-	char *fmtsql;
+	//char *fmtsql;
 
-	db_open(gconf.dbname);	
+	if(db_open() == DB_FAIL) {
+		x2s_dbg("db_open fail\n");
+		return PARSE_FAIL;
+	}	
+
+	/*
 	fmtsql = DBSQL_FMTSTR_CREATE_TABLE(gconf.dbtable);
 	if(!fmtsql) {
 		x2s_dbg("DBSQL_FMTSTR_CREATE_TABLE error!\n");
 		return PARSE_FAIL;
 	}
 	db_exec_sql(fmtsql);
+	//*/
 	for(i=0, id=0; i<xinfo.count; i++) {
 		if(strcmp((char *)xinfo.nodeName[i], "key") != 0)
 			continue;
-		fmtsql = DBSQL_FMTSTR_INSERT_ITEM(gconf.dbtable, id++, 
-			(char *)xinfo.nodeProp[i], (char *)xinfo.nodeValue[i], 2);
-		if(!fmtsql) {
-			x2s_dbg("DBSQL_FMTSTR_INSERT_ITEM error!\n");
+		if(db_insert_item(id, (char *)xinfo.nodeProp[i], (char *)xinfo.nodeValue[i], 2) == DB_FAIL) {
+			x2s_dbg("db_insert_item fail\n");
 			return PARSE_FAIL;
-		}
-		db_exec_sql(fmtsql);
+		}	
 	}
 
 	db_close();

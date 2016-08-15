@@ -13,6 +13,10 @@ static char *errmsg;
 // for saving formatted sql string 
 static char sqlstr[DB_MAX_STR];
 
+// internal used functions
+static int db_exec_sql(const char *);
+static int callback(void *, int , char **, char **);
+
 static int callback(void *notused, int argc, char **argv, char **azColName)
 {
 	int i;
@@ -23,21 +27,7 @@ static int callback(void *notused, int argc, char **argv, char **azColName)
 	return 0;
 }
 
-int db_open(const char *dbname)
-{
-	if(!dbname)
-		return DB_FAIL;
-
-	if(sqlite3_open(dbname, &db) != SQLITE_OK) {
-		x2s_dbg("open db(%s) fail: %s!\n", dbname, sqlite3_errmsg(db));
-		return DB_FAIL;		
-	} 
-	
-	x2s_dbg("open db(%s) success!\n", dbname);
-	return DB_SUCCESS;
-}
-
-int db_exec_sql(const char *sql)
+static int db_exec_sql(const char *sql)
 {
 	int rc;
 
@@ -52,9 +42,24 @@ int db_exec_sql(const char *sql)
 	return DB_SUCCESS;
 }
 
+int db_open()
+{
+	if(!gconf.dbname)
+		return DB_FAIL;
+
+	if(sqlite3_open(gconf.dbname, &db) != SQLITE_OK) {
+		x2s_dbg("open db(%s) fail: %s!\n", gconf.dbname, sqlite3_errmsg(db));
+		return DB_FAIL;		
+	} 
+	
+	x2s_dbg("open db(%s) success!\n", gconf.dbname);
+	return DB_SUCCESS;
+}
+
 int db_close()
 {
 	sqlite3_close(db);
+	db = NULL;
 
 	return DB_SUCCESS;	
 }
@@ -66,11 +71,6 @@ int db_get_value(const char *key, char *value, int len)
 	char *selsql;
 	char **result;
 
-	if(db_open(gconf.dbname) == DB_FAIL) {
-		x2s_dbg("open db fail: %s!\n", sqlite3_errmsg(db));
-		return DB_FAIL;		
-	}
-	
 	// get sql format string
 	selsql = DBSQL_FMTSTR_SELECT_VALUE(gconf.dbtable, key);
 	if(!selsql) {
@@ -91,19 +91,12 @@ int db_get_value(const char *key, char *value, int len)
 	strncpy(value, result[0 + ncol], len);
 	x2s_dbg("value = %s\n", value);
 	
-	db_close();	
-
 	return DB_SUCCESS;
 }
 
 int db_set_value(const char *key, char *value, int len)
 {
 	char *fmtsql;
-
-	if(db_open(gconf.dbname) == DB_FAIL) {
-		x2s_dbg("open db fail : %s\n", sqlite3_errmsg(db));
-		return DB_FAIL;
-	}
 
 	// get sql update format string
 	fmtsql = DBSQL_FMTSTR_UPDATE_VALUE(gconf.dbtable, key, value);
@@ -117,7 +110,44 @@ int db_set_value(const char *key, char *value, int len)
 		return DB_FAIL;
 	}
 
-	db_close();
+	return DB_SUCCESS;
+}
+
+int db_insert_item(int id, const char *name, const char *value, int type)
+{
+	char *fmtsql;
+
+	// create table
+	fmtsql = DBSQL_FMTSTR_CREATE_TABLE(gconf.dbtable);
+	if(!fmtsql) {
+		x2s_dbg("DBSQL_FMTSTR_CREATE_TABLE error!\n");
+		return DB_FAIL;
+	}
+	db_exec_sql(fmtsql);
+
+	// insert record item
+	fmtsql = DBSQL_FMTSTR_INSERT_ITEM(gconf.dbtable, id, name, value, type);
+	if(!fmtsql) {
+		x2s_dbg("DBSQL_FMTSTR_INSERT_ITEM error!\n");
+		return DB_FAIL;
+	}
+	db_exec_sql(fmtsql);
+
+	return DB_SUCCESS;
+}
+
+int db_delete_item(const char *name)
+{
+	char *fmtsql;
+
+	// insert record item
+	fmtsql = DBSQL_FMTSTR_DELETE_ITEM(gconf.dbtable, name);
+	if(!fmtsql) {
+		x2s_dbg("DBSQL_FMTSTR_INSERT_ITEM error!\n");
+		return DB_FAIL;
+	}
+	db_exec_sql(fmtsql);
+
 	return DB_SUCCESS;
 }
 
@@ -166,6 +196,25 @@ char *DBSQL_FMTSTR_INSERT_ITEM(const char *dbtable, int id,
 	return sqlstr;
 }
 
+char *DBSQL_FMTSTR_DELETE_ITEM(const char *dbtable, const char *name)
+{
+	int n;
+
+	if(!dbtable || !name )
+		return NULL;
+
+	memset(sqlstr, 0, sizeof(sqlstr));
+	n = snprintf(sqlstr, DB_MAX_STR,	\
+		"DELETE FROM %s WHERE NAME='%s'",		\
+		dbtable, name);
+
+	if(n < 0)
+		return NULL;
+
+	return sqlstr;
+
+}
+
 char *DBSQL_FMTSTR_UPDATE_VALUE(const char *dbtable, const char *name, const char *value)
 {
 	int n;
@@ -203,3 +252,4 @@ char *DBSQL_FMTSTR_SELECT_VALUE(const char *dbtable, const char *name)
 	return sqlstr;
 
 }
+
