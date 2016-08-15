@@ -6,6 +6,7 @@
 
 #include "x2sdb.h"
 #include "x2sutil.h"
+#include "x2sconf.h"
 #include "x2sparse.h"
 
 typedef struct xmlinfo_s{
@@ -183,10 +184,10 @@ void xml_print()
 {
 	int i;
 
-	printf("%-16s%-64s%-32s\n", "name", "prop", "value");
-	printf("-----------------------------------------------------------------------------------------\n");
+	x2s_dbg("%-16s%-64s%-32s\n", "name", "prop", "value");
+	x2s_dbg("-----------------------------------------------------------------------------------------\n");
 	for(i=0; i<xinfo.count; i++) 
-		printf("%-16s%-64s%-32s\n", xinfo.nodeName[i], xinfo.nodeProp[i], xinfo.nodeValue[i]);
+		x2s_dbg("%-16s%-64s%-32s\n", xinfo.nodeName[i], xinfo.nodeProp[i], xinfo.nodeValue[i]);
 	
 }
 
@@ -194,18 +195,27 @@ int xml_save2db()
 {
 	int i;
 	int id;
-	char sqlbuf[XML_MAX_BUF];
+	char *fmtsql;
 
-	sql_open(DEFAULT_DB_NAME);	
-	sql_exec(CREATE_TABLE_STR);
+	sql_open(gconf.dbname);	
+	fmtsql = DBSQL_FMTSTR_CREATE_TABLE(gconf.dbtable);
+	if(!fmtsql) {
+		x2s_dbg("DBSQL_FMTSTR_CREATE_TABLE error!\n");
+		return PARSE_FAIL;
+	}
+	sql_exec(fmtsql);
 	for(i=0, id=0; i<xinfo.count; i++) {
 		if(strcmp((char *)xinfo.nodeName[i], "key") != 0)
 			continue;
-		snprintf(sqlbuf, XML_MAX_BUF, INSERT_FMT_STR, 
-			id++, (char *)xinfo.nodeProp[i], (char *)xinfo.nodeValue[i], 2);
-		sql_exec(sqlbuf);
+		fmtsql = DBSQL_FMTSTR_INSERT_ITEM(gconf.dbtable, id, 
+			(char *)xinfo.nodeProp[i], (char *)xinfo.nodeValue[i], 2);
+		if(!fmtsql) {
+			x2s_dbg("DBSQL_FMTSTR_INSERT_ITEM error!\n");
+			return PARSE_FAIL;
+		}
+		sql_exec(fmtsql);
 	}
 
 	sql_close();
-	return 0;
+	return PARSE_SUCCESS;
 }
