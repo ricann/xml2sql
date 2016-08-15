@@ -197,25 +197,25 @@ int xml_save2db()
 	int id;
 	char *fmtsql;
 
-	sql_open(gconf.dbname);	
+	db_open(gconf.dbname);	
 	fmtsql = DBSQL_FMTSTR_CREATE_TABLE(gconf.dbtable);
 	if(!fmtsql) {
 		x2s_dbg("DBSQL_FMTSTR_CREATE_TABLE error!\n");
 		return PARSE_FAIL;
 	}
-	sql_exec(fmtsql);
+	db_exec_sql(fmtsql);
 	for(i=0, id=0; i<xinfo.count; i++) {
 		if(strcmp((char *)xinfo.nodeName[i], "key") != 0)
 			continue;
-		fmtsql = DBSQL_FMTSTR_INSERT_ITEM(gconf.dbtable, id, 
+		fmtsql = DBSQL_FMTSTR_INSERT_ITEM(gconf.dbtable, id++, 
 			(char *)xinfo.nodeProp[i], (char *)xinfo.nodeValue[i], 2);
 		if(!fmtsql) {
 			x2s_dbg("DBSQL_FMTSTR_INSERT_ITEM error!\n");
 			return PARSE_FAIL;
 		}
-		sql_exec(fmtsql);
+		db_exec_sql(fmtsql);
 	}
 
-	sql_close();
+	db_close();
 	return PARSE_SUCCESS;
 }

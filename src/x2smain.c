@@ -14,7 +14,7 @@ int main()
 
 	xml_save2db();
 
-	sql_key_get("vin", tmp, 1024);
+	db_get_value("vin", tmp, 1024);
 
 	xml_close();
 
