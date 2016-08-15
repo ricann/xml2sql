@@ -4,7 +4,8 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
-#include "sqlapi.h"
+#include "x2sdb.h"
+#include "x2sutil.h"
 #include "x2sparse.h"
 
 typedef struct xmlinfo_s{
@@ -28,14 +29,14 @@ int xml_open(const char *fname)
 	// open xml file
 	xinfo.doc = xmlReadFile(fname, XML_ENCODE, XML_PARSE_RECOVER);
 	if(!xinfo.doc) {
-		printf("open xml error!\n");
+		x2s_dbg("open xml error!\n");
 		return PARSE_FAIL;
 	}
 
 	// get root element
 	xinfo.rootNode = xmlDocGetRootElement(xinfo.doc);
 	if(!xinfo.rootNode){
-		printf("the document is empty!\n");
+		x2s_dbg("the document is empty!\n");
 		xmlFreeDoc(xinfo.doc);
 		return PARSE_FAIL;
 	}
@@ -73,7 +74,8 @@ void xml_traverse(xmlNodePtr curNode)
 		}
 		xinfo.count++;
 		if(xinfo.count == XML_MAXSIZE) {
-			printf("buffer is full, exit...\n"); exit(1);
+			x2s_dbg("buffer is full, exit...\n"); 
+			exit(1);
 		}
 
 		// traverse next xml layer
@@ -135,7 +137,7 @@ void xml_traverse_keycat(xmlNodePtr curNode)
 			xinfo.nodeValue[xinfo.count] = (xmlChar *)"";
 		xinfo.count++;
 		if(xinfo.count == XML_MAXSIZE) {
-			printf("buffer is full, exit...\n");
+			x2s_dbg("buffer is full, exit...\n");
 			exit(1);
 		}
 
@@ -163,7 +165,6 @@ int xml_get_key(const char *key, char *value, int len)
 		}
 	} 
 
-printf("get key 2\n");
 	return PARSE_FAIL;
 }
 

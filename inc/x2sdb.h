@@ -1,5 +1,5 @@
-#ifndef __SQLAPI_H__
-#define __SQLAPI_H__
+#ifndef __X2SDB_H__
+#define __X2SDB_H__
 
 #define SQLAPI_SUCCESS		0
 #define SQLAPI_FAIL			1
@@ -22,4 +22,4 @@ int sql_close();
 
 int sql_key_get(const char *key, char *value, int len);
 
-#endif /* __SQLAPI_H__ */
+#endif /* __X2SDB_H__ */

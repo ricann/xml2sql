@@ -1,6 +1,7 @@
 #include "x2sconf.h"
 #include "x2sparse.h"
-#include "sqlapi.h"
+
+#include "x2sdb.h"
 
 int main()
 {
