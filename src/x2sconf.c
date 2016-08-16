@@ -18,7 +18,7 @@
 
 #define	KEYVALUE_DFT_DBNAME			"x2s.db" 
 #define	KEYVALUE_DFT_DBTABLE		"X2STABLE" 
-#define	KEYVALUE_DFT_DEBUG			DEBUG_STDOUT
+#define	KEYVALUE_DFT_DEBUG			(DEBUG_STDOUT)
 #define	KEYVALUE_DFT_DEBUG_FNAME	"x2s.dbg" 
 
 glob_conf_t gconf;
@@ -58,14 +58,10 @@ void conf_read()
 
 void conf_default()
 {
-printf("1.0.0.1\n");
 	strncpy(gconf.dbname, KEYVALUE_DFT_DBNAME, CONF_NAME_LEN);
-printf("1.0.0.2\n");
 	strncpy(gconf.dbtable, KEYVALUE_DFT_DBTABLE, CONF_NAME_LEN);
-printf("1.0.0.3\n");
 	gconf.debug = KEYVALUE_DFT_DEBUG;
 	strncpy(gconf.debug_fname, KEYVALUE_DFT_DEBUG_FNAME, CONF_NAME_LEN);
-printf("1.0.0.4\n");
 }
 
 int conf_init()

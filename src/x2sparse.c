@@ -68,11 +68,11 @@ void xml_traverse(xmlNodePtr curNode)
 		xinfo.nodeName[xinfo.count] = (xmlChar *)curNode->name;
 		xinfo.nodeProp[xinfo.count] = xmlGetProp(curNode, (const xmlChar *)"name");
 
-		if(curNode->xmlChildrenNode && curNode->xmlChildrenNode->next == NULL){
+		if(curNode->xmlChildrenNode && curNode->xmlChildrenNode->next == NULL)
 			xinfo.nodeValue[xinfo.count] = xmlNodeGetContent(curNode);
-		} else {
+		else 
 			xinfo.nodeValue[xinfo.count] = (xmlChar *)"";
-		}
+		
 		xinfo.count++;
 		if(xinfo.count == XML_MAXSIZE) {
 			x2s_dbg("buffer is full, exit...\n"); 
