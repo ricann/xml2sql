@@ -1,7 +1,6 @@
 #include "x2sconf.h"
 #include "x2sparse.h"
 #include "x2sdb.h"
-#include "x2smain.h"
 
 #ifdef MACRO_DFN_EXE
 int main()
@@ -27,8 +26,22 @@ int main()
 }
 #endif
 
-#ifdef MACRO_LIBA
+#if (defined(MACRO_LIBA) || defined(MACRO_LIBSO))
+int x2s_execute()
+{
+	int i;
+
+	conf_read();
+
+	for(i=0; i<gconf.nxml; i++) {
+		xml_open(gconf.xml_fname[i]);
+		xml_parse_keycat();
+		xml_print();
+		xml_save2db();
+		xml_close();
+	}
+
+	return X2S_SUCCESS;
+}
 #endif
 
-#ifdef MACRO_LIBSO
-#endif
