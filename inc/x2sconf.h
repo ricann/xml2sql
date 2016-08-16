@@ -4,6 +4,7 @@
 #define CONF_SUCCESS				0
 #define CONF_FAIL					1
 
+#define CONF_XML_MAX				10
 #define CONF_NAME_LEN				128
 
 enum {
@@ -19,6 +20,9 @@ typedef struct glob_conf{
 	int debug;
 	char debug_fname[CONF_NAME_LEN];
 	int debug_fd;
+
+	int nxml;
+	char xml_fname[CONF_XML_MAX][CONF_NAME_LEN];
 } glob_conf_t;
 
 extern glob_conf_t gconf;

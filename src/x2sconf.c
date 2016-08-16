@@ -15,11 +15,13 @@
 #define	KEYNAME_DBTABLE				"dbtable" 
 #define	KEYNAME_DEBUG				"debug" 
 #define	KEYNAME_DEBUG_FNAME			"fname" 
+#define	KEYNAME_XML_FNAME			"xmlname" 
 
 #define	KEYVALUE_DFT_DBNAME			"x2s.db" 
 #define	KEYVALUE_DFT_DBTABLE		"X2STABLE" 
 #define	KEYVALUE_DFT_DEBUG			(DEBUG_STDOUT)
 #define	KEYVALUE_DFT_DEBUG_FNAME	"x2s.dbg" 
+#define	KEYVALUE_DFT_XML_FNAME		"sys_config.xml" 
 
 glob_conf_t gconf;
 
@@ -29,6 +31,7 @@ static int conf_get_dbname();
 static int conf_get_dbtable();
 static int conf_get_debug();
 static int conf_get_debug_fname();
+static int conf_get_xml_fname();
 static int conf_get_debug_fd();
 static void conf_finish();
 static void conf_print();
@@ -46,6 +49,7 @@ void conf_read()
 	conf_get_debug();
 	conf_get_debug_fname();
 	conf_get_debug_fd();
+	conf_get_xml_fname();
 
 	// close xml file
 	conf_finish();
@@ -62,6 +66,8 @@ void conf_default()
 	strncpy(gconf.dbtable, KEYVALUE_DFT_DBTABLE, CONF_NAME_LEN);
 	gconf.debug = KEYVALUE_DFT_DEBUG;
 	strncpy(gconf.debug_fname, KEYVALUE_DFT_DEBUG_FNAME, CONF_NAME_LEN);
+	strncpy(gconf.xml_fname[0], KEYVALUE_DFT_XML_FNAME, CONF_NAME_LEN);
+	gconf.nxml = 1;
 }
 
 int conf_init()
@@ -77,7 +83,7 @@ int conf_init()
 
 int conf_get_dbname()
 {
-	if(xml_get_key(KEYNAME_DBNAME, gconf.dbname, CONF_NAME_LEN) == PARSE_FAIL) {
+	if(xml_get_value(KEYNAME_DBNAME, gconf.dbname, CONF_NAME_LEN) == PARSE_FAIL) {
 		strncpy(gconf.dbname, KEYVALUE_DFT_DBNAME, CONF_NAME_LEN);
 		return CONF_FAIL;
 	}
@@ -87,7 +93,7 @@ int conf_get_dbname()
 
 int conf_get_dbtable()
 {
-	if(xml_get_key(KEYNAME_DBTABLE, gconf.dbtable, CONF_NAME_LEN) == PARSE_FAIL) {
+	if(xml_get_value(KEYNAME_DBTABLE, gconf.dbtable, CONF_NAME_LEN) == PARSE_FAIL) {
 		strncpy(gconf.dbtable, KEYVALUE_DFT_DBTABLE, CONF_NAME_LEN);
 		return CONF_FAIL;
 	}
@@ -99,7 +105,7 @@ int conf_get_debug()
 {
 	char buf[CONF_NAME_LEN];
 
-	if(xml_get_key(KEYNAME_DEBUG, buf, CONF_NAME_LEN) == PARSE_FAIL) {
+	if(xml_get_value(KEYNAME_DEBUG, buf, CONF_NAME_LEN) == PARSE_FAIL) {
 		gconf.debug = KEYVALUE_DFT_DEBUG;
 		return CONF_FAIL;
 	}
@@ -115,7 +121,7 @@ int conf_get_debug()
 
 int conf_get_debug_fname()
 {
-	if(xml_get_key(KEYNAME_DEBUG_FNAME, gconf.debug_fname, CONF_NAME_LEN) == PARSE_FAIL) {
+	if(xml_get_value(KEYNAME_DEBUG_FNAME, gconf.debug_fname, CONF_NAME_LEN) == PARSE_FAIL) {
 		strncpy(gconf.debug_fname, KEYVALUE_DFT_DEBUG_FNAME, CONF_NAME_LEN);
 		return CONF_FAIL;
 	}
@@ -141,6 +147,17 @@ int conf_get_debug_fd()
 	}
 	
 	return CONF_FAIL;
+}
+
+int conf_get_xml_fname()
+{
+	if(xml_get_multi_value(KEYNAME_XML_FNAME, gconf.xml_fname, &gconf.nxml) == PARSE_FAIL) {
+		strncpy(gconf.xml_fname[0], KEYVALUE_DFT_XML_FNAME, CONF_NAME_LEN);
+		gconf.nxml = 1;
+		return CONF_FAIL;
+	}
+
+	return CONF_SUCCESS;
 }
 
 void conf_finish()

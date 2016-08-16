@@ -152,7 +152,7 @@ void xml_traverse_keycat(xmlNodePtr curNode)
 		catbuf[strlen(catbuf) - len1] = '\0';
 }
 
-int xml_get_key(const char *key, char *value, int len)
+int xml_get_value(const char *key, char *value, int len)
 {
 	int i;
 	
@@ -169,10 +169,29 @@ int xml_get_key(const char *key, char *value, int len)
 	return PARSE_FAIL;
 }
 
-int xml_set_key(const char *key, char *value, int len)
+int xml_get_multi_value(const char *key, char value[CONF_XML_MAX][CONF_NAME_LEN], int *nxml)
 {
-	// nothing to do now
-	return PARSE_SUCCESS;
+	int i;
+
+	if(!nxml)
+		return PARSE_FAIL;
+	*nxml = 0;
+	
+	for(i=0; i<xinfo.count; i++){
+		if(*nxml >= CONF_XML_MAX)
+			return PARSE_SUCCESS;
+
+		if(xinfo.nodeProp[i] == NULL)
+			continue;
+
+		if(strcmp(key, (char *)xinfo.nodeProp[i]) == 0) {
+			strncpy(value[*nxml], (char *)xinfo.nodeValue[i], CONF_NAME_LEN);	
+			(*nxml)++;
+			return PARSE_SUCCESS;
+		}
+	} 
+
+	return PARSE_FAIL;
 }
 
 void xml_close()

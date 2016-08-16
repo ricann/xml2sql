@@ -3,6 +3,7 @@
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
+#include "x2sconf.h"
 
 #define PARSE_SUCCESS		0
 #define PARSE_FAIL			1
@@ -24,8 +25,8 @@ int xml_parse();
 int xml_parse_keycat();
 void xml_traverse(xmlNodePtr);
 void xml_traverse_keycat(xmlNodePtr);
-int xml_get_key(const char *key, char *value, int len);
-int xml_set_key(const char *key, char *value, int len);
+int xml_get_value(const char *key, char *value, int len);
+int xml_get_multi_value(const char *key, char value[CONF_XML_MAX][CONF_NAME_LEN], int *nxml);
 void xml_close();
 void xml_print();
 
