@@ -25,7 +25,7 @@ $(XML2SQL_TARGET_LIBSO): $(XML2SQL_OBJ)
 
 #define compile rules
 $(XML2SQL_OBJ_DIR)/%.o: $(XML2SQL_SRC_DIR)/%.c
-	$(CC) $(XML2SQL_DFN_EXE) $(XML2SQL_CFLAGS) $(XML2SQL_INC) $< -o $@
+	$(CC) $(XML2SQL_CFLAGS) $(XML2SQL_INC) $< -o $@
 
 ifneq ($(MAKECMDGOALS), clean)
 sinclude $(XML2SQL_DEP)

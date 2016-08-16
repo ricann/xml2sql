@@ -1,6 +1,9 @@
 #ifndef __X2SMAIN_H__
 #define __X2SMAIN_H__
 
+#define X2S_SUCCESS		0
+#define X2S_FAIL		1
+
 //#if (defined(MACRO_LIBA) || defined(MACRO_LIBSO))
 int x2s_execute();
 

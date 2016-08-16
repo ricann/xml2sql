@@ -1,8 +1,9 @@
 #include "x2sconf.h"
 #include "x2sparse.h"
 #include "x2sdb.h"
+#include "x2smain.h"
 
-#ifdef MACRO_DFN_EXE
+//#ifdef MACRO_DFN_EXE
 int main()
 {
 	int i;
@@ -22,11 +23,10 @@ int main()
 	db_get_value_str("vin", tmp, 1024);
 	db_close();
 
-	return 0;
+	return X2S_SUCCESS;
 }
-#endif
+//#endif
 
-#if (defined(MACRO_LIBA) || defined(MACRO_LIBSO))
 int x2s_execute()
 {
 	int i;
@@ -43,5 +43,4 @@ int x2s_execute()
 
 	return X2S_SUCCESS;
 }
-#endif
 
