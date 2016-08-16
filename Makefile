@@ -8,12 +8,24 @@ else
 include ${XML2SQL_BASE}/make_x86.h
 endif
 
-$(XML2SQL_TARGET): $(XML2SQL_OBJ) $(CONF_TARGET) $(UNP_TARGET)
-	$(LD)  $^ -o $@ $(XML2SQL_LIB_PATH) $(XML2SQL_LIB)
+exe: $(XML2SQL_TARGET_EXE)
+liba: $(XML2SQL_TARGET_LIBA)
+libso: $(XML2SQL_TARGET_LIBSO)
+
+$(XML2SQL_TARGET_EXE): $(XML2SQL_OBJ)
+	$(LD)  $^ -o $@ $(XML2SQL_INC_LIB_PATH) $(XML2SQL_INC_LIB)
+
+$(XML2SQL_TARGET_LIBA): $(XML2SQL_OBJ)
+	$(AR) $(LIB_A_FLAGS) $@ $^
+	$(CP) $(XML2SQL_INC_DIR)/x2smain.h $(XML2SQL_BASE)/lib/
+
+$(XML2SQL_TARGET_LIBSO): $(XML2SQL_OBJ)
+	$(LD) $^ -o $@ $(LIB_SO_FLAGS) $(XML2SQL_INC_LIB_PATH) $(XML2SQL_INC_LIB)
+	$(CP) $(XML2SQL_INC_DIR)/x2smain.h $(XML2SQL_BASE)/lib/
 
 #define compile rules
 $(XML2SQL_OBJ_DIR)/%.o: $(XML2SQL_SRC_DIR)/%.c
-	$(CC) $(XML2SQL_CFLAGS) $(XML2SQL_INC) $< -o $@
+	$(CC) $(XML2SQL_DFN_EXE) $(XML2SQL_CFLAGS) $(XML2SQL_INC) $< -o $@
 
 ifneq ($(MAKECMDGOALS), clean)
 sinclude $(XML2SQL_DEP)
@@ -34,7 +46,9 @@ clean:
 	$(RM) -f tags
 	$(RM) -f $(XML2SQL_OBJ_DIR)/*.o
 	$(RM) -f $(XML2SQL_OBJ_DIR)/*.dep
-	$(RM) -f $(XML2SQL_TARGET)
+	$(RM) -f $(XML2SQL_TARGET_EXE)
+	$(RM) -f $(XML2SQL_TARGET_LIBA)
+	$(RM) -f $(XML2SQL_TARGET_LIBSO)
 
 print:
 	@echo XML2SQL_TARGET=${XML2SQL_TARGET}

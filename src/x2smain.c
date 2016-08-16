@@ -1,8 +1,9 @@
 #include "x2sconf.h"
 #include "x2sparse.h"
-
 #include "x2sdb.h"
+#include "x2smain.h"
 
+#ifdef MACRO_DFN_EXE
 int main()
 {
 	int i;
@@ -24,3 +25,10 @@ int main()
 
 	return 0;
 }
+#endif
+
+#ifdef MACRO_LIBA
+#endif
+
+#ifdef MACRO_LIBSO
+#endif

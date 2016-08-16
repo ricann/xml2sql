@@ -5,6 +5,8 @@
 *.swp
 *.db
 *.*~
+*.xml
 
 tags
 xml2sql
+x2s
