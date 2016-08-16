@@ -9,8 +9,10 @@
 // db operation APIs, must call db_open first, and call db_close finally.
 int db_open();
 int db_close();
-int db_get_value(const char *key, char *value, int len);
-int db_set_value(const char *key, char *value, int len);
+int db_get_value_str(const char *key, char *value, int len);
+int db_set_value_str(const char *key, char *value, int len);
+int db_get_value_int(const char *key, int *value);
+int db_set_value_int(const char *key, int value);
 int db_insert_item(int id, const char *name, const char *value, int type);
 int db_delete_item(const char *name);
 

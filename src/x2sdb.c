@@ -64,7 +64,7 @@ int db_close()
 	return DB_SUCCESS;	
 }
 
-int db_get_value(const char *key, char *value, int len)
+int db_get_value_str(const char *key, char *value, int len)
 {
 	int nrow;
 	int ncol;
@@ -94,12 +94,65 @@ int db_get_value(const char *key, char *value, int len)
 	return DB_SUCCESS;
 }
 
-int db_set_value(const char *key, char *value, int len)
+int db_set_value_str(const char *key, char *value, int len)
 {
 	char *fmtsql;
 
 	// get sql update format string
 	fmtsql = DBSQL_FMTSTR_UPDATE_VALUE(gconf.dbtable, key, value);
+	if(!fmtsql) {
+		x2s_dbg("DBSQL_FMTSTR_UPDATE_VALUE error\n");
+		return DB_FAIL;
+	}
+
+	if(db_exec_sql(fmtsql) == DB_FAIL) {
+		x2s_dbg("sql_exec %s fail!\n", fmtsql);
+		return DB_FAIL;
+	}
+
+	return DB_SUCCESS;
+}
+
+int db_get_value_int(const char *key, int *value)
+{
+	int nrow;
+	int ncol;
+	char *selsql;
+	char **result;
+	char buf[128];
+
+	// get sql format string
+	selsql = DBSQL_FMTSTR_SELECT_VALUE(gconf.dbtable, key);
+	if(!selsql) {
+		x2s_dbg("DBSQL_FMTSTR_SELECT_VALUE error!\n");
+		return DB_FAIL;
+	}
+	// search key's value
+	if(sqlite3_get_table(db, selsql, &result, &nrow, &ncol, &errmsg) != SQLITE_OK) {
+		x2s_dbg("sql_key_get error : %s\n", errmsg);
+		sqlite3_free(errmsg);
+		return DB_FAIL;
+	}
+
+	// handle search result
+	x2s_dbg("nrow = %d, ncol = %d\n", nrow, ncol);
+	if(nrow < 1)
+		return DB_FAIL;
+	strncpy(buf, result[0 + ncol], sizeof(buf));
+	*value = atoi(buf);
+	x2s_dbg("value = %d\n", *value);
+	
+	return DB_SUCCESS;
+}
+
+int db_set_value_int(const char *key, int value)
+{
+	char *fmtsql;
+	char buf[128];
+
+	// get sql update format string
+	snprintf(buf, sizeof(buf), "%d", value);
+	fmtsql = DBSQL_FMTSTR_UPDATE_VALUE(gconf.dbtable, key, buf);
 	if(!fmtsql) {
 		x2s_dbg("DBSQL_FMTSTR_UPDATE_VALUE error\n");
 		return DB_FAIL;

@@ -15,7 +15,7 @@ int main()
 	xml_save2db();
 
 	db_open();
-	db_get_value("vin", tmp, 1024);
+	db_get_value_str("vin", tmp, 1024);
 	db_close();
 
 	xml_close();
