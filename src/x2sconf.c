@@ -167,6 +167,8 @@ void conf_finish()
 
 void conf_print()
 {
+	int i;
+	
 	if(!gconf.debug)
 		return;
 
@@ -182,4 +184,8 @@ void conf_print()
 		x2s_dbg("debug = unkonwn(%d)\n", gconf.debug);
 	x2s_dbg("debug_fname = %s\n", gconf.debug_fname);
 	x2s_dbg("debug_fd = %d\n", gconf.debug_fd);
+
+	x2s_dbg("xml_fname lists : \n");
+	for(i=0; i<gconf.nxml; i++)
+		x2s_dbg("%s\n", gconf.xml_fname[i]);
 }

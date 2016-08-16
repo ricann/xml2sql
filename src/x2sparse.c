@@ -187,10 +187,11 @@ int xml_get_multi_value(const char *key, char value[CONF_XML_MAX][CONF_NAME_LEN]
 		if(strcmp(key, (char *)xinfo.nodeProp[i]) == 0) {
 			strncpy(value[*nxml], (char *)xinfo.nodeValue[i], CONF_NAME_LEN);	
 			(*nxml)++;
-			return PARSE_SUCCESS;
 		}
 	} 
 
+	if(*nxml > 0)
+		return PARSE_SUCCESS;
 	return PARSE_FAIL;
 }
 
