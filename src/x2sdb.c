@@ -17,6 +17,12 @@ static char sqlstr[DB_MAX_STR];
 static int db_exec_sql(const char *);
 static int callback(void *, int , char **, char **);
 
+/******************************************************************************
+ * *Function: callback
+ * *Description: sqlite API callback function, used to get related info when 
+ * * *operatiing database. 
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 static int callback(void *notused, int argc, char **argv, char **azColName)
 {
 	int i;
@@ -27,6 +33,14 @@ static int callback(void *notused, int argc, char **argv, char **azColName)
 	return 0;
 }
 
+/******************************************************************************
+ * *Function: db_exec_sql
+ * *Description: execute sql statement
+ * *Input: sql(sql statement)
+ * *Output: none
+ * *Return: DB_SUCCESS/DB_FAIL
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 static int db_exec_sql(const char *sql)
 {
 	int rc;
@@ -42,6 +56,14 @@ static int db_exec_sql(const char *sql)
 	return DB_SUCCESS;
 }
 
+/******************************************************************************
+ * *Function: db_open
+ * *Description: open sqlite database
+ * *Input: none
+ * *Output: none
+ * *Return: DB_SUCCESS/DB_FAIL
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 int db_open()
 {
 	if(!gconf.dbname)
@@ -56,6 +78,14 @@ int db_open()
 	return DB_SUCCESS;
 }
 
+/******************************************************************************
+ * *Function: db_close
+ * *Description: close sqlite database
+ * *Input: none
+ * *Output: none
+ * *Return: DB_SUCCESS/DB_FAIL
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 int db_close()
 {
 	sqlite3_close(db);
@@ -64,6 +94,14 @@ int db_close()
 	return DB_SUCCESS;	
 }
 
+/******************************************************************************
+ * *Function: db_get_value_str
+ * *Description: give a key, get its value from db
+ * *Input: key(db priamry key), len(value's buffer length)
+ * *Output: value(key's value)
+ * *Return: DB_SUCCESS/DB_FAIL
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 int db_get_value_str(const char *key, char *value, int len)
 {
 	int nrow;
@@ -94,6 +132,14 @@ int db_get_value_str(const char *key, char *value, int len)
 	return DB_SUCCESS;
 }
 
+/******************************************************************************
+ * *Function: db_set_value_str
+ * *Description: give a key, set its value 
+ * *Input: key(db priamry key), value(key's value), len(value's length)
+ * *Output: none
+ * *Return: DB_SUCCESS/DB_FAIL
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 int db_set_value_str(const char *key, char *value, int len)
 {
 	char *fmtsql;
@@ -113,6 +159,14 @@ int db_set_value_str(const char *key, char *value, int len)
 	return DB_SUCCESS;
 }
 
+/******************************************************************************
+ * *Function: db_get_value_int
+ * *Description: give a key, get its value to a integer variable 
+ * *Input: key(db priamry key)
+ * *Output: value(key's value)
+ * *Return: DB_SUCCESS/DB_FAIL
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 int db_get_value_int(const char *key, int *value)
 {
 	int nrow;
@@ -145,6 +199,14 @@ int db_get_value_int(const char *key, int *value)
 	return DB_SUCCESS;
 }
 
+/******************************************************************************
+ * *Function: db_set_value_int
+ * *Description: give a key, set its value using a integer variable 
+ * *Input: key(db priamry key), value(key's value)
+ * *Output: none
+ * *Return: DB_SUCCESS/DB_FAIL
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 int db_set_value_int(const char *key, int value)
 {
 	char *fmtsql;
@@ -166,6 +228,15 @@ int db_set_value_int(const char *key, int value)
 	return DB_SUCCESS;
 }
 
+/******************************************************************************
+ * *Function: db_insert_item
+ * *Description: insert an item of record into db
+ * *Input: id(record's id), name(primary key name), value(key's value), 
+ * * *type(record type)
+ * *Output: none
+ * *Return: DB_SUCCESS/DB_FAIL
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 int db_insert_item(int id, const char *name, const char *value, int type)
 {
 	char *fmtsql;
@@ -189,6 +260,14 @@ int db_insert_item(int id, const char *name, const char *value, int type)
 	return DB_SUCCESS;
 }
 
+/******************************************************************************
+ * *Function: db_delete_item
+ * *Description: delete an item of record from db
+ * *Input: name(primary key name)
+ * *Output: none
+ * *Return: DB_SUCCESS/DB_FAIL
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 int db_delete_item(const char *name)
 {
 	char *fmtsql;
@@ -204,9 +283,14 @@ int db_delete_item(const char *name)
 	return DB_SUCCESS;
 }
 
-//int sql_key_del(const char *key)
-//
-
+/******************************************************************************
+ * *Function: DBSQL_FMTSTR_CREATE_TABLE
+ * *Description: make a sql statement string used to create a table 
+ * *Input: dbtable(database table name)
+ * *Output: none
+ * *Return: sql statement string
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 char *DBSQL_FMTSTR_CREATE_TABLE(const char *dbtable)
 {
 	int n;
@@ -229,6 +313,15 @@ char *DBSQL_FMTSTR_CREATE_TABLE(const char *dbtable)
 	return sqlstr;
 }
 
+/******************************************************************************
+ * *Function: DBSQL_FMTSTR_INSERT_ITEM
+ * *Description: make a sql statement string used to insert a record item
+ * *Input: dbtable(database table name) ,id(record's id), 
+ * * *name(primary key name), value(key's value), type(record type)
+ * *Output: none
+ * *Return: sql statement string
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 char *DBSQL_FMTSTR_INSERT_ITEM(const char *dbtable, int id, 
 		const char *name, const char *value, int type)
 {
@@ -249,6 +342,14 @@ char *DBSQL_FMTSTR_INSERT_ITEM(const char *dbtable, int id,
 	return sqlstr;
 }
 
+/******************************************************************************
+ * *Function: DBSQL_FMTSTR_DELETE_ITEM
+ * *Description: make a sql statement string used to delete a record item
+ * *Input: dbtable(database table name), name(primary key name)
+ * *Output: none
+ * *Return: sql statement string
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 char *DBSQL_FMTSTR_DELETE_ITEM(const char *dbtable, const char *name)
 {
 	int n;
@@ -268,6 +369,15 @@ char *DBSQL_FMTSTR_DELETE_ITEM(const char *dbtable, const char *name)
 
 }
 
+/******************************************************************************
+ * *Function: DBSQL_FMTSTR_UPDATE_VALUE
+ * *Description: make a sql statement string used to update a record item
+ * *Input: dbtable(database table name), name(primary key name), 
+ * * *value(key name's value)
+ * *Output: none
+ * *Return: sql statement string
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 char *DBSQL_FMTSTR_UPDATE_VALUE(const char *dbtable, const char *name, const char *value)
 {
 	int n;
@@ -287,6 +397,14 @@ char *DBSQL_FMTSTR_UPDATE_VALUE(const char *dbtable, const char *name, const cha
 
 }
 
+/******************************************************************************
+ * *Function: DBSQL_FMTSTR_SELECT_VALUE
+ * *Description: make a sql statement string used to select a record item
+ * *Input: dbtable(database table name), name(primary key name), 
+ * *Output: none
+ * *Return: sql statement string
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 char *DBSQL_FMTSTR_SELECT_VALUE(const char *dbtable, const char *name)
 {
 	int n;

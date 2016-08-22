@@ -7,6 +7,14 @@
 
 #define UTIL_STR_LEN		512
 
+/******************************************************************************
+ * *Function: x2s_dbg
+ * *Description: debug some info into gconf.debug_fd
+ * *Input: fmt(debug parameters)
+ * *Output: none
+ * *Return: none
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 void x2s_dbg(const char *fmt, ...)
 {
 	int n;
@@ -27,6 +35,14 @@ void x2s_dbg(const char *fmt, ...)
 	write(gconf.debug_fd, buf, n);
 }
 
+/******************************************************************************
+ * *Function: x2s_dbg_exit
+ * *Description: debug some info into gconf.debug_fd and exit
+ * *Input: fmt(debug parameters)
+ * *Output: none
+ * *Return: none
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 void x2s_dbg_exit(const char *fmt, ...)
 {
 	int n;

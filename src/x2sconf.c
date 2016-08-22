@@ -36,6 +36,14 @@ static int conf_get_debug_fd();
 static void conf_finish();
 static void conf_print();
 
+/******************************************************************************
+ * *Function: conf_read
+ * *Description: read config file and save its contents
+ * *Input: none
+ * *Output: none
+ * *Return: none
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 void conf_read()
 {
 	// open xml file and read its contents
@@ -60,6 +68,14 @@ void conf_read()
 	return;
 }
 
+/******************************************************************************
+ * *Function: conf_default
+ * *Description: set gconf var to default value
+ * *Input: none
+ * *Output: none
+ * *Return: none
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 void conf_default()
 {
 	strncpy(gconf.dbname, KEYVALUE_DFT_DBNAME, CONF_NAME_LEN);
@@ -70,6 +86,14 @@ void conf_default()
 	gconf.nxml = 1;
 }
 
+/******************************************************************************
+ * *Function: conf_init
+ * *Description: open and parse xml config file
+ * *Input: none
+ * *Output: none
+ * *Return: CONF_SUCCESS/CONF_FAIL
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 int conf_init()
 {
 	if(xml_open(CONF_FNAME) == PARSE_FAIL)
@@ -81,6 +105,14 @@ int conf_init()
 	return CONF_SUCCESS;
 }
 
+/******************************************************************************
+ * *Function: conf_get_dbname
+ * *Description: get dbname and save it into gconf var
+ * *Input: none
+ * *Output: none
+ * *Return: CONF_SUCCESS/CONF_FAIL
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 int conf_get_dbname()
 {
 	if(xml_get_value(KEYNAME_DBNAME, gconf.dbname, CONF_NAME_LEN) == PARSE_FAIL) {
@@ -91,6 +123,14 @@ int conf_get_dbname()
 	return CONF_SUCCESS;
 }
 
+/******************************************************************************
+ * *Function: conf_get_dbtable
+ * *Description: get dbtable and save it into gconf var
+ * *Input: none
+ * *Output: none
+ * *Return: CONF_SUCCESS/CONF_FAIL
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 int conf_get_dbtable()
 {
 	if(xml_get_value(KEYNAME_DBTABLE, gconf.dbtable, CONF_NAME_LEN) == PARSE_FAIL) {
@@ -101,6 +141,14 @@ int conf_get_dbtable()
 	return CONF_SUCCESS;
 }
 
+/******************************************************************************
+ * *Function: conf_get_debug
+ * *Description: get debug value and save it into gconf var
+ * *Input: none
+ * *Output: none
+ * *Return: CONF_SUCCESS/CONF_FAIL
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 int conf_get_debug()
 {
 	char buf[CONF_NAME_LEN];
@@ -119,6 +167,14 @@ int conf_get_debug()
 	return CONF_SUCCESS;
 }
 
+/******************************************************************************
+ * *Function: conf_get_debug_fname
+ * *Description: get debug fname and save it into gconf var
+ * *Input: none
+ * *Output: none
+ * *Return: CONF_SUCCESS/CONF_FAIL
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 int conf_get_debug_fname()
 {
 	if(xml_get_value(KEYNAME_DEBUG_FNAME, gconf.debug_fname, CONF_NAME_LEN) == PARSE_FAIL) {
@@ -129,6 +185,14 @@ int conf_get_debug_fname()
 	return CONF_SUCCESS;
 }
 
+/******************************************************************************
+ * *Function: conf_get_debug_fd
+ * *Description: get debug file descriptor and save it into gconf var
+ * *Input: none
+ * *Output: none
+ * *Return: CONF_SUCCESS/CONF_FAIL
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 int conf_get_debug_fd()
 {
 	if(!gconf.debug) {
@@ -149,6 +213,14 @@ int conf_get_debug_fd()
 	return CONF_FAIL;
 }
 
+/******************************************************************************
+ * *Function: conf_get_xml_fname
+ * *Description: get xml file name and save it into gconf var
+ * *Input: none
+ * *Output: none
+ * *Return: CONF_SUCCESS/CONF_FAIL
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 int conf_get_xml_fname()
 {
 	if(xml_get_multi_value(KEYNAME_XML_FNAME, gconf.xml_fname, &gconf.nxml) == PARSE_FAIL) {
@@ -160,11 +232,27 @@ int conf_get_xml_fname()
 	return CONF_SUCCESS;
 }
 
+/******************************************************************************
+ * *Function: conf_finish
+ * *Description: close xml file
+ * *Input: none
+ * *Output: none
+ * *Return: none
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 void conf_finish()
 {
 	xml_close();
 }
 
+/******************************************************************************
+ * *Function: conf_print
+ * *Description: print config contents
+ * *Input: none
+ * *Output: none
+ * *Return: none
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 void conf_print()
 {
 	int i;

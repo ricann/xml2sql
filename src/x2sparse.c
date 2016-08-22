@@ -22,6 +22,14 @@ typedef struct xmlinfo_s{
 
 static xmlinfo_t xinfo;
 
+/******************************************************************************
+ * *Function: xml_open
+ * *Description: open xml file
+ * *Input: fname(file name)
+ * *Output: none
+ * *Return: PARSE_SUCCESS/PARSE_FAIL
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 int xml_open(const char *fname)
 {
 	// init xinfo struct
@@ -45,6 +53,14 @@ int xml_open(const char *fname)
 	return PARSE_SUCCESS;
 }
 
+/******************************************************************************
+ * *Function: xml_parse
+ * *Description: parse a xml file, save parse result into xinfo var 
+ * *Input: none
+ * *Output: none
+ * *Return: PARSE_SUCCESS/PARSE_FAIL
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 int xml_parse()
 {
 	xml_traverse(xinfo.rootNode);
@@ -52,6 +68,14 @@ int xml_parse()
 	return PARSE_SUCCESS;
 }
 
+/******************************************************************************
+ * *Function: xml_traverse
+ * *Description: xml_parse func's implementation
+ * *Input: curNode(xml files's root node)
+ * *Output: none
+ * *Return: none
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 void xml_traverse(xmlNodePtr curNode)
 {
 	if(!curNode)
@@ -85,6 +109,15 @@ void xml_traverse(xmlNodePtr curNode)
 	}
 }
 
+/******************************************************************************
+ * *Function: xml_parse_keycat
+ * *Description: parse a xml file, save parse result into xinfo var, and 
+ * * *nodeProp save a catenated key name 
+ * *Input: none
+ * *Output: none
+ * *Return: PARSE_SUCCESS/PARSE_FAIL
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 int xml_parse_keycat()
 {
 	xml_traverse_keycat(xinfo.rootNode);
@@ -92,6 +125,14 @@ int xml_parse_keycat()
 	return PARSE_SUCCESS;
 }
 
+/******************************************************************************
+ * *Function: xml_traverse_keycat
+ * *Description: xml_parse_keycat func's implementation
+ * *Input: curNode(xml files's root node)
+ * *Output: none
+ * *Return: none
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 void xml_traverse_keycat(xmlNodePtr curNode)
 {
 	int len1 = 0;
@@ -152,6 +193,14 @@ void xml_traverse_keycat(xmlNodePtr curNode)
 		catbuf[strlen(catbuf) - len1] = '\0';
 }
 
+/******************************************************************************
+ * *Function: xml_get_value
+ * *Description: get key's value
+ * *Input: key(primary key name), len(value's buffer length)
+ * *Output: value(key's value)
+ * *Return: PARSE_SUCCESS/PARSE_FAIL
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 int xml_get_value(const char *key, char *value, int len)
 {
 	int i;
@@ -169,6 +218,14 @@ int xml_get_value(const char *key, char *value, int len)
 	return PARSE_FAIL;
 }
 
+/******************************************************************************
+ * *Function: xml_get_multi_value
+ * *Description: get key's multi-value, used to get configured xml file names
+ * *Input: key(primary key name)
+ * *Output: value(key's value), nxml(value's number)
+ * *Return: PARSE_SUCCESS/PARSE_FAIL
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 int xml_get_multi_value(const char *key, char value[CONF_XML_MAX][CONF_NAME_LEN], int *nxml)
 {
 	int i;
@@ -195,11 +252,27 @@ int xml_get_multi_value(const char *key, char value[CONF_XML_MAX][CONF_NAME_LEN]
 	return PARSE_FAIL;
 }
 
+/******************************************************************************
+ * *Function: xml_close
+ * *Description: close xml file
+ * *Input: none
+ * *Output: none
+ * *Return: none
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 void xml_close()
 {
 	xmlFreeDoc(xinfo.doc);
 }
 
+/******************************************************************************
+ * *Function: xml_print
+ * *Description: print xml files name/prop/value info
+ * *Input: none
+ * *Output: none
+ * *Return: none
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 void xml_print()
 {
 	int i;
@@ -211,25 +284,24 @@ void xml_print()
 	
 }
 
+/******************************************************************************
+ * *Function: xml_save2db
+ * *Description: save xml info into a db file
+ * *Input: none
+ * *Output: none
+ * *Return: PARSE_SUCCESS/PARSE_FAIL
+ * *Date: 2016/8/22
+ * ****************************************************************************/
 int xml_save2db()
 {
 	int i;
 	int id;
-	//char *fmtsql;
 
 	if(db_open() == DB_FAIL) {
 		x2s_dbg("db_open fail\n");
 		return PARSE_FAIL;
 	}	
 
-	/*
-	fmtsql = DBSQL_FMTSTR_CREATE_TABLE(gconf.dbtable);
-	if(!fmtsql) {
-		x2s_dbg("DBSQL_FMTSTR_CREATE_TABLE error!\n");
-		return PARSE_FAIL;
-	}
-	db_exec_sql(fmtsql);
-	//*/
 	for(i=0, id=0; i<xinfo.count; i++) {
 		if(strcmp((char *)xinfo.nodeName[i], "key") != 0)
 			continue;
