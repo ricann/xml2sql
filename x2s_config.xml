@@ -13,7 +13,7 @@
 
 	<!-- config xml files to be parsed, support 10 files max now -->
 	<array name="xmllist">
-		<key name="xmlname">sys_config1.xml</key>
+		<key name="xmlname">test.xml</key>
 		<key name="xmlname">sys_config2.xml</key>
 	</array>
 </config>

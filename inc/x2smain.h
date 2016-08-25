@@ -5,8 +5,8 @@
 #define X2S_FAIL		1
 
 /******************************************************************************
- * *Function: main
- * *Description: when generate exe object, use this function to do tests.
+ * *Function: x2s_execute
+ * *Description: export function, used to parse xml file and save result to db
  * *Input: none
  * *Output: none
  * *Return: X2S_SUCCESS/X2S_FAIL
